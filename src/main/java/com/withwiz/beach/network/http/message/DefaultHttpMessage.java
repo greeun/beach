@@ -660,7 +660,7 @@ public class DefaultHttpMessage extends HttpStatusExtended
 	@Override
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("=== ").append(getName())
+		StringBuffer sb = new StringBuffer("=== ").append(name != null ? name : this.getClass().getName())
 				.append("\n");
 		if (statusCode != INetworkStatus.SC_UNDEFINED)
 			sb.append("-status code: ").append(statusCode).append("\n");
