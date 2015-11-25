@@ -12,6 +12,26 @@ import java.net.URL;
 public interface IHttpMessage
 {
 	/**
+	 * http method: get
+	 */
+	int		METHOD_GET		= 1;
+
+	/**
+	 * http method: post
+	 */
+	int		METHOD_POST		= 2;
+
+	/**
+	 * http method: put
+	 */
+	int		METHOD_PUT		= 3;
+
+	/**
+	 * http method: delete
+	 */
+	int		METHOD_DELETE	= 4;
+
+	/**
 	 * add a header parameter.<BR/>
 	 *
 	 * @param key
@@ -191,4 +211,23 @@ public interface IHttpMessage
 	 * @return attachment file name
 	 */
 	String getAttachmentFilename();
+
+	/**
+	 * return body byte[]<BR/>
+	 * @return byte[]
+     */
+	byte[] getBodyByteArray();
+
+	/**
+	 * return Content-Disposition object.<BR/>
+	 * @return ContextDisposition
+     */
+	ContentDisposition getContentDisposition();
+
+	/**
+	 * set object for "Content-Disposition"<BR/>
+	 * @param contentDisposition ContentDisposition object for "Content-Disposition"
+     */
+	void setContentDisposition(ContentDisposition contentDisposition);
+
 }

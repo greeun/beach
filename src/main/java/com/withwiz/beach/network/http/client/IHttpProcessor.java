@@ -15,5 +15,5 @@ public interface IHttpProcessor<REQ extends IHttpMessage, RES extends IHttpMessa
 	 *            request message
 	 * @return responeMessage
 	 */
-	public RES request(REQ requestMessage);
+	RES request(REQ requestMessage);
 }

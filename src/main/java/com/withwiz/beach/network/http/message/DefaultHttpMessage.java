@@ -17,44 +17,9 @@ import com.withwiz.plankton.network.INetworkStatus;
  * HTTP common message<BR/>
  * Created by uni4love on 2010. 5. 8..
  */
-public class DefaultHttpMessage extends HttpStatusExtended
+public class DefaultHttpMessage extends HttpMessage
 		implements IHttpMessage, Cloneable
 {
-	/**
-	 * http method: get
-	 */
-	public static final int		METHOD_GET		= 1;
-
-	/**
-	 * http method: post
-	 */
-	public static final int		METHOD_POST		= 2;
-
-	/**
-	 * http method: put
-	 */
-	public static final int		METHOD_PUT		= 3;
-
-	/**
-	 * http method: delete
-	 */
-	public static final int		METHOD_DELETE	= 4;
-
-	/**
-	 * protocol: http
-	 */
-	private static final String	PROTOCOL_HTTP	= "http";
-
-	/**
-	 * protocol: https
-	 */
-	private static final String PROTOCOL_HTTPS = "https";
-
-	/**
-	 * protocol divider
-	 */
-	private static final String PROTOCOL_DIVIDER = "://";
-
 	/**
 	 * body print length limit
 	 */
@@ -65,35 +30,6 @@ public class DefaultHttpMessage extends HttpStatusExtended
 	 */
 	private static final String MESSAGE_BODY_LENGTHS_BIGGER = "The body length is over than "
 			+ BODY_PRINT_LENGTH_LIMIT + ".";
-
-	/**
-	 * code-strings repository
-	 */
-	private static Map<Integer, String> methodStrings = null;
-
-	/**
-	 * initializing status code strings.
-	 */
-	static
-	{
-		methodStrings = new HashMap<Integer, String>();
-		Field[] fields = DefaultHttpMessage.class.getFields();
-		for (Field field : fields)
-		{
-			try
-			{
-				if (field.getName().startsWith("METHOD_"))
-				{
-					methodStrings.put(field.getInt(DefaultHttpMessage.class),
-							field.getName().replace("METHOD_", ""));
-				}
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
 
 	/**
 	 * name
@@ -192,27 +128,7 @@ public class DefaultHttpMessage extends HttpStatusExtended
 		setUrl(url);
 	}
 
-	/**
-	 * return string text related with HTTP method code.
-	 *
-	 * @param code
-	 *            method code
-	 * @return method string
-	 */
-	public static String getMethodString(int code)
-	{
-		return methodStrings.get(code);
-	}
 
-	/**
-	 * return HTTP method code Set instance.<BR/>
-	 *
-	 * @return Set
-	 */
-	public static Set getMethodSet()
-	{
-		return methodStrings.keySet();
-	}
 
 	/**
 	 * return name.<BR/>
@@ -336,7 +252,7 @@ public class DefaultHttpMessage extends HttpStatusExtended
 	@Override
 	public int getParameterSize()
 	{
-		return parameters.size();
+		return parameters != null ? parameters.size() : 0;
 	}
 
 	/**
@@ -521,6 +437,7 @@ public class DefaultHttpMessage extends HttpStatusExtended
 		this.parameters = parameters;
 	}
 
+	@Override
 	public ContentDisposition getContentDisposition()
 	{
 		return contentDisposition;

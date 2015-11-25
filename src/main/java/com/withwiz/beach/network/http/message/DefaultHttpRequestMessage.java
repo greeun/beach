@@ -6,28 +6,8 @@ import java.net.MalformedURLException;
  * HTTP request message.<BR/>
  * Created by uni4love on 2010. 5. 8..
  */
-public class DefaultHttpRequestMessage extends DefaultHttpMessage
+public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHttpRequestMessage
 {
-	/**
-	 * body type: undefined
-	 */
-	public static final int BODY_TYPE_UNDEFINED = -1;
-
-	/**
-	 * body type: string
-	 */
-	public static final int BODY_TYPE_STRING = 1;
-
-	/**
-	 * body type: byte[]
-	 */
-	public static final int BODY_TYPE_BYTE_ARRAY = 2;
-
-	/**
-	 * multipart
-	 */
-	public static final int BODY_TYPE_MULTIPART = 3;
-
 	/**
 	 * default name
 	 */
@@ -86,11 +66,13 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage
 	 *
 	 * @return file path
 	 */
+	@Override
 	public String getAttachFilePath()
 	{
 		return attachFilePath;
 	}
 
+	@Override
 	public String getBodyName()
 	{
 		return bodyName;
@@ -101,6 +83,7 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage
 		this.bodyName = bodyName;
 	}
 
+	@Override
 	public int getBodyType()
 	{
 		return bodyType;

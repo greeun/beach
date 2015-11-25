@@ -4,7 +4,7 @@ package com.withwiz.beach.network.http.message;
  * HTTP response message.<BR/>
  * Created by uni4love on 2010. 5. 8..
  */
-public class DefaultHttpResponseMessage extends DefaultHttpMessage
+public class DefaultHttpResponseMessage extends DefaultHttpMessage implements IHttpResponseMessage
 {
 	/**
 	 * default name
@@ -25,14 +25,16 @@ public class DefaultHttpResponseMessage extends DefaultHttpMessage
 	}
 
 	@Override
+	public String getName()
+	{
+		return name == null ? NAME_DEFAULT : name;
+	}
+
+	@Override
 	public String toString()
 	{
 		return new StringBuffer(super.toString()).toString();
 	}
 
-	@Override
-	public String getName()
-	{
-		return name == null ? NAME_DEFAULT : name;
-	}
+
 }

@@ -16,8 +16,11 @@ import java.util.Vector;
 import javax.net.ssl.SSLException;
 
 import com.withwiz.beach.network.http.message.*;
-import com.withwiz.beach.network.http.message.DefaultHttpMessage;
+import com.withwiz.beach.network.http.message.HttpMessage;
 import com.withwiz.beach.network.http.ssl.CertPassSSLSocketFactory;
+
+import com.withwiz.plankton.io.ProxyInputStream;
+
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -47,17 +50,17 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.BasicHttpProcessor;
 import org.apache.http.protocol.HttpContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.withwiz.plankton.io.ProxyInputStream;
 
 /**
  * This implements IHttpProcessor interface with org.apache.http.client.HttpClient.<BR/>
  * Created by uni4love on 2010. 5. 8.
  */
 public class DefaultHttpProcessor
-		implements IHttpProcessor<DefaultHttpRequestMessage, DefaultHttpResponseMessage>
+		implements IHttpProcessor<IHttpRequestMessage, IHttpResponseMessage>
 {
 	/**
 	 * logger
@@ -385,27 +388,27 @@ public class DefaultHttpProcessor
 	 *            DefaultHttpMessage
 	 * @return HttpRequestBase
 	 */
-	private HttpRequestBase createRequestHttpMethod(DefaultHttpRequestMessage message)
+	private HttpRequestBase createRequestHttpMethod(IHttpRequestMessage message)
 			throws UnsupportedEncodingException
 	{
 		HttpRequestBase req = null;
 		switch (message.getMethod())
 		{
-			case DefaultHttpMessage.METHOD_GET:
+			case IHttpRequestMessage.METHOD_GET:
 				req = new HttpGet(message.getUrlString());
 				break;
-			case DefaultHttpMessage.METHOD_POST:
+			case IHttpRequestMessage.METHOD_POST:
 				req = new HttpPost(message.getUrlString());
 				break;
-			case DefaultHttpMessage.METHOD_PUT:
+			case IHttpRequestMessage.METHOD_PUT:
 				req = new HttpPut(message.getUrlString());
 				break;
-			case DefaultHttpMessage.METHOD_DELETE:
+			case IHttpRequestMessage.METHOD_DELETE:
 				req = new HttpDeleteWithBody(message.getUrlString());
 				break;
 		}
 
-		if (message.getMethod() != DefaultHttpMessage.METHOD_GET)
+		if (message.getMethod() != IHttpRequestMessage.METHOD_GET)
 		{
 			// multipart use or not
 			if (isMultipart(message))
@@ -421,8 +424,7 @@ public class DefaultHttpProcessor
 					multipartEntity.addPart(file.getName(), fileBody);
 				}
 				// parameter
-				if (message.getParameters() != null
-						&& message.getParameters().size() > 0)
+				if (message.getParameterSize() > 0)
 				{
 					// text(parameter)
 					StringBody stringBody = null;
@@ -463,14 +465,14 @@ public class DefaultHttpProcessor
 				if (message.getBodyInputStream() != null)
 				{
 					if (message
-							.getBodyType() == DefaultHttpRequestMessage.BODY_TYPE_STRING)
+							.getBodyType() == HttpMessage.BODY_TYPE_STRING)
 					{
 						entity = new StringEntity(
 								new String(message.getBodyByteArray()),
 								message.getTextEncoding());
 					}
 					else if (message
-							.getBodyType() == DefaultHttpRequestMessage.BODY_TYPE_BYTE_ARRAY)
+							.getBodyType() == HttpMessage.BODY_TYPE_BYTE_ARRAY)
 					{
 						entity = new ByteArrayEntity(
 								message.getBodyByteArray());
@@ -514,14 +516,14 @@ public class DefaultHttpProcessor
 	 *            DefaultHttpRequestMessage
 	 * @return use or not
 	 */
-	private boolean isMultipart(DefaultHttpRequestMessage message)
+	private boolean isMultipart(IHttpRequestMessage message)
 	{
 		if (message.getAttachFilePath() != null
 				&& message.getAttachFilePath().length() > 0)
 		{
 			return true;
 		}
-		if (message.getBodyType() == DefaultHttpRequestMessage.BODY_TYPE_MULTIPART)
+		if (message.getBodyType() == HttpMessage.BODY_TYPE_MULTIPART)
 		{
 			return true;
 		}
@@ -536,9 +538,9 @@ public class DefaultHttpProcessor
 	 * @return DefaultHttpResponseMessage
 	 */
 	@Override
-	public DefaultHttpResponseMessage request(DefaultHttpRequestMessage requestMessage)
+	public IHttpResponseMessage request(IHttpRequestMessage requestMessage)
 	{
-		DefaultHttpResponseMessage responseMessage = null;
+		IHttpResponseMessage responseMessage = null;
 		int status = -1;
 		HttpUriRequest httpUriRequest = null;
 		InputStream inputStream = null;
@@ -653,11 +655,11 @@ public class DefaultHttpProcessor
 	 *            InputStream to HTTP body
 	 * @return DefaultHttpResponseMessage
 	 */
-	private DefaultHttpResponseMessage createHttpResponseMessage(
-			DefaultHttpRequestMessage requestMessage, int status,
+	private IHttpResponseMessage createHttpResponseMessage(
+			IHttpRequestMessage requestMessage, int status,
 			Header[] headers, InputStream bodyInputStream)
 	{
-		DefaultHttpResponseMessage responseMessage = new DefaultHttpResponseMessage();
+		IHttpResponseMessage responseMessage = new DefaultHttpResponseMessage();
 		responseMessage.setStatusCode(status);
 		try
 		{
@@ -860,7 +862,7 @@ public class DefaultHttpProcessor
 		String url = req.getUrlString();
 		log.info("service url: {}", url);
 		http.setProxyResponseData(false);
-		DefaultHttpResponseMessage res = http.request(req);
+		IHttpResponseMessage res = http.request(req);
 
 		log.info("response code: {}", res.getStatusCode());
 		switch (res.getStatusCode())
