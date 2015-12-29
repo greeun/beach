@@ -48,7 +48,7 @@ public interface IHttpRequestMessage extends IHttpMessage
 	/**
 	 * set socket timeout.<BR/>
 	 */
-	void setSocketTimeout();
+	void setSocketTimeout(int socketTimeout);
 
 	/**
 	 * return socket timeout.<BR/>
@@ -60,7 +60,7 @@ public interface IHttpRequestMessage extends IHttpMessage
 	/**
 	 * set network buffer size.<BR/>
 	 */
-	void setNetworkBufferSize();
+	void setNetworkBufferSize(int networkBufferSize);
 
 	/**
 	 * return network buffer size.<BR/>

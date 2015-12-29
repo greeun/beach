@@ -129,6 +129,7 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	 * @param connectionTimeout
 	 *            connection timeout(milliseconds)
 	 */
+	@Override
 	public void setConnectionTimeout(int connectionTimeout)
 	{
 		this.connectionTimeout = connectionTimeout;
@@ -151,6 +152,7 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	 * @param socketTimeout
 	 *            socket timeout(milliseconds)
 	 */
+	@Override
 	public void setSocketTimeout(int socketTimeout)
 	{
 		this.socketTimeout = socketTimeout;
@@ -173,6 +175,7 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	 * @param networkBufferSize
 	 *            network buffer size(bytes)
 	 */
+	@Override
 	public void setNetworkBufferSize(int networkBufferSize)
 	{
 		this.networkBufferSize = networkBufferSize;
