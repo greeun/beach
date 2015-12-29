@@ -169,6 +169,11 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 		return networkBufferSize;
 	}
 
+	@Override
+	public void setTrustSsl(boolean isTrustSsl) {
+
+	}
+
 	/**
 	 * set network buffer size.<BR/>
 	 *

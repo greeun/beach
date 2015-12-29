@@ -69,4 +69,16 @@ public interface IHttpRequestMessage extends IHttpMessage
 	 */
 	int getNetworkBufferSize();
 
+	/**
+	 * set trust ssl.<BR/>
+	 * @param isTrustSsl use or not
+     */
+	void setTrustSsl(boolean isTrustSsl);
+
+	/**
+	 * return use or not for trusting ssl.<BR/>
+	 * @return
+     */
+	boolean isTrustSsl();
+
 }
