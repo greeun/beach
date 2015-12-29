@@ -21,6 +21,32 @@ public class CertPassSSLSocketFactory extends SSLSocketFactory
 {
 	SSLContext	sslContext	= SSLContext.getInstance("TLS");
 
+	/**
+	 * constructor
+	 * @param truststore trust store
+	 * @param isVerifyHostname
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 * @throws KeyStoreException
+	 * @throws UnrecoverableKeyException
+     */
+	public CertPassSSLSocketFactory(KeyStore truststore, boolean isVerifyHostname)
+			throws NoSuchAlgorithmException, KeyManagementException,
+			KeyStoreException, UnrecoverableKeyException
+	{
+		this(truststore);
+		if(!isVerifyHostname)
+			this.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	}
+
+	/**
+	 * constructor
+	 * @param truststore trust store
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 * @throws KeyStoreException
+	 * @throws UnrecoverableKeyException
+     */
 	public CertPassSSLSocketFactory(KeyStore truststore)
 			throws NoSuchAlgorithmException, KeyManagementException,
             KeyStoreException, UnrecoverableKeyException
@@ -64,4 +90,6 @@ public class CertPassSSLSocketFactory extends SSLSocketFactory
 	{
 		return sslContext.getSocketFactory().createSocket();
 	}
+
+
 }
