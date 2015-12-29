@@ -1,4 +1,4 @@
-package com.withwiz.beach.network.http.client;
+package com.withwiz.beach.network.http.message;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 

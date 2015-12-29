@@ -11,7 +11,7 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	/**
 	 * default name
 	 */
-	protected static final String NAME_DEFAULT = "HTTP_REQ_MESSAGE";
+	protected static final String NAME_DEFAULT = "HTTP_REQUEST_MESSAGE";
 
 	/**
 	 * body name
@@ -27,6 +27,24 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	 * attach file path
 	 */
 	protected String attachFilePath = null;
+
+	/**
+	 * connection timeout<br/>
+	 * default: 10 seconds
+	 */
+	private int connectionTimeout = UNDEFINED;
+
+	/**
+	 * socket timeout<br/>
+	 * default: 10 seconds
+	 */
+	private int socketTimeout = UNDEFINED;
+
+	/**
+	 * network data buffer size<br/>
+	 * default: 8k
+	 */
+	private int networkBufferSize = UNDEFINED;
 
 	/**
 	 * constructor
@@ -92,6 +110,72 @@ public class DefaultHttpRequestMessage extends DefaultHttpMessage implements IHt
 	public void setBodyType(int bodyType)
 	{
 		this.bodyType = bodyType;
+	}
+
+	/**
+	 * return connection timeout.<BR/>
+	 *
+	 * @return connection timeout(milliseconds)
+	 */
+	@Override
+	public int getConnectionTimeout()
+	{
+		return connectionTimeout;
+	}
+
+	/**
+	 * set connection timeout<BR/>
+	 *
+	 * @param connectionTimeout
+	 *            connection timeout(milliseconds)
+	 */
+	public void setConnectionTimeout(int connectionTimeout)
+	{
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	/**
+	 * return socket timeout.<BR/>
+	 *
+	 * @return socket timeout(milliseconds)
+	 */
+	@Override
+	public int getSocketTimeout()
+	{
+		return socketTimeout;
+	}
+
+	/**
+	 * set socket timeout.<BR/>
+	 *
+	 * @param socketTimeout
+	 *            socket timeout(milliseconds)
+	 */
+	public void setSocketTimeout(int socketTimeout)
+	{
+		this.socketTimeout = socketTimeout;
+	}
+
+	/**
+	 * return network buffer size.<BR/>
+	 *
+	 * @return network buffer size(bytes)
+	 */
+	@Override
+	public int getNetworkBufferSize()
+	{
+		return networkBufferSize;
+	}
+
+	/**
+	 * set network buffer size.<BR/>
+	 *
+	 * @param networkBufferSize
+	 *            network buffer size(bytes)
+	 */
+	public void setNetworkBufferSize(int networkBufferSize)
+	{
+		this.networkBufferSize = networkBufferSize;
 	}
 
 	@Override

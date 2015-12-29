@@ -1,9 +1,9 @@
 package com.withwiz.beach.network.http.message;
 
 import java.io.InputStream;
-import java.lang.String;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * HTTP message interface.<BR/>
@@ -14,22 +14,22 @@ public interface IHttpMessage
 	/**
 	 * http method: get
 	 */
-	int		METHOD_GET		= 1;
+	int METHOD_GET = 1;
 
 	/**
 	 * http method: post
 	 */
-	int		METHOD_POST		= 2;
+	int METHOD_POST = 2;
 
 	/**
 	 * http method: put
 	 */
-	int		METHOD_PUT		= 3;
+	int METHOD_PUT = 3;
 
 	/**
 	 * http method: delete
 	 */
-	int		METHOD_DELETE	= 4;
+	int METHOD_DELETE = 4;
 
 	/**
 	 * add a header parameter.<BR/>
@@ -40,6 +40,14 @@ public interface IHttpMessage
 	 *            value
 	 */
 	void addHeaderParameter(String key, String value);
+
+	/**
+	 * add header parameters.<BR/>
+	 *
+	 * @param headerParameters
+	 *            header parameters
+	 */
+	void addHeaderParameters(Map<String, String> headerParameters);
 
 	/**
 	 * return a header parameter from header values.<BR/>
@@ -73,6 +81,14 @@ public interface IHttpMessage
 	 *            value
 	 */
 	void addParameter(String key, String value);
+
+	/**
+	 * add parameters.<BR/>
+	 * 
+	 * @param parameters
+	 *            parameter list
+	 */
+	void addParameters(Map<String, String> parameters);
 
 	/**
 	 * return a parameter value.<BR/>
@@ -214,20 +230,38 @@ public interface IHttpMessage
 
 	/**
 	 * return body byte[]<BR/>
+	 * 
 	 * @return byte[]
-     */
+	 */
 	byte[] getBodyByteArray();
 
 	/**
 	 * return Content-Disposition object.<BR/>
+	 * 
 	 * @return ContextDisposition
-     */
+	 */
 	ContentDisposition getContentDisposition();
 
 	/**
 	 * set object for "Content-Disposition"<BR/>
-	 * @param contentDisposition ContentDisposition object for "Content-Disposition"
-     */
+	 * 
+	 * @param contentDisposition
+	 *            ContentDisposition object for "Content-Disposition"
+	 */
 	void setContentDisposition(ContentDisposition contentDisposition);
 
+	/**
+	 * return use or not for SSL trusting.<BR/>
+	 *
+	 * @return use or not
+	 */
+	boolean isTrustSsl();
+
+	/**
+	 * set use or not for SSL trusting.<BR/>
+	 *
+	 * @param isSslTrust
+	 *            use or not
+	 */
+	void setTrustSSl(boolean isSslTrust);
 }

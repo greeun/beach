@@ -9,7 +9,7 @@ public class DefaultHttpResponseMessage extends DefaultHttpMessage implements IH
 	/**
 	 * default name
 	 */
-	protected static final String 		NAME_DEFAULT = "HTTP_RES_MESSAGE";
+	protected static final String 		NAME_DEFAULT = "HTTP_RESPONSE_MESSAGE";
 
 	@Override
 	public byte[] getBodyByteArray()
@@ -35,6 +35,4 @@ public class DefaultHttpResponseMessage extends DefaultHttpMessage implements IH
 	{
 		return new StringBuffer(super.toString()).toString();
 	}
-
-
 }

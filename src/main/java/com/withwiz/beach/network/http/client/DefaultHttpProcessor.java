@@ -15,12 +15,6 @@ import java.util.Vector;
 
 import javax.net.ssl.SSLException;
 
-import com.withwiz.beach.network.http.message.*;
-import com.withwiz.beach.network.http.message.HttpMessage;
-import com.withwiz.beach.network.http.ssl.CertPassSSLSocketFactory;
-
-import com.withwiz.plankton.io.ProxyInputStream;
-
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -50,65 +44,36 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.BasicHttpProcessor;
 import org.apache.http.protocol.HttpContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.withwiz.beach.network.http.message.*;
+import com.withwiz.beach.network.http.message.HttpMessage;
+import com.withwiz.beach.network.http.ssl.CertPassSSLSocketFactory;
+import com.withwiz.plankton.io.ProxyInputStream;
 
 /**
- * This implements IHttpProcessor interface with org.apache.http.client.HttpClient.<BR/>
+ * This implements IHttpProcessor interface with
+ * org.apache.http.client.HttpClient.<BR/>
  * Created by uni4love on 2010. 5. 8.
  */
 public class DefaultHttpProcessor
 		implements IHttpProcessor<IHttpRequestMessage, IHttpResponseMessage>
 {
 	/**
-	 * logger
+	 * connection timeout: 10seconds<BR/>
 	 */
-	Logger log = LoggerFactory.getLogger(DefaultHttpProcessor.class);
+	public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
 
 	/**
-	 * use writing response to file or not.<BR/>
+	 * socket timeout: 10seconds<BR/>
 	 */
-	private boolean isWritingResponseToFile = false;
+	public static final int DEFAULT_SOCKET_TIME = 10000;
 
 	/**
-	 * file path for saving a response
+	 * default network buffer size: 8192bytes<BR/>
 	 */
-	private String responseFilePath = null;
-
-	/**
-	 * proxy use or not for reusing response inputstream
-	 */
-	private boolean isProxyResponseData = false;
-
-	/**
-	 * connection timeout<br/>
-	 * default: 10 seconds
-	 */
-	private int connectionTimeout = 5000;
-
-	/**
-	 * socket timeout<br/>
-	 * default: 10 seconds
-	 */
-	private int socketTimeout = 10000;
-
-	/**
-	 * network data buffer size<br/>
-	 * default: 8k
-	 */
-	private int networkBufferSize = 8192;
-
-	/**
-	 * HttpClient instance
-	 */
-	private HttpClient httpClient = null;
-
-	/**
-	 * HttpParams instance
-	 */
-	private HttpParams httpParameters = null;
+	public static final int DEFAULT_NETWORK_BUFFER_SIZE = 8192;
 
 	/**
 	 * Set if HTTP requests are blocked from being executed on this thread
@@ -118,7 +83,7 @@ public class DefaultHttpProcessor
 	/**
 	 * Interceptor throws an exception if the executing thread is blocked
 	 */
-	private static final HttpRequestInterceptor	threadCheckInterceptor	= new HttpRequestInterceptor()
+	private static final HttpRequestInterceptor threadCheckInterceptor = new HttpRequestInterceptor()
 	{
 		public void process(HttpRequest request, HttpContext context)
 		{
@@ -128,11 +93,6 @@ public class DefaultHttpProcessor
 			}
 		}
 	};
-
-	/**
-	 * SSLSocketFactory
-	 */
-	private SSLSocketFactory					sslSocketFactory		= null;
 
 	/**
 	 * allow all SSLSocketFactory
@@ -146,7 +106,7 @@ public class DefaultHttpProcessor
 			KeyStore trustStore = KeyStore
 					.getInstance(KeyStore.getDefaultType());
 			trustStore.load(null, null);
-			allowAllSSLSocketFactory = new CertPassSSLSocketFactory(trustStore);
+			allowAllSSLSocketFactory = new CertPassSSLSocketFactory(trustStore, false);
 		}
 		catch (KeyStoreException e)
 		{
@@ -175,116 +135,45 @@ public class DefaultHttpProcessor
 	}
 
 	/**
+	 * logger
+	 */
+	Logger log = LoggerFactory.getLogger(DefaultHttpProcessor.class);
+
+	/**
+	 * use writing response to file or not.<BR/>
+	 */
+	private boolean isWritingResponseToFile = false;
+
+	/**
+	 * file path for saving a response
+	 */
+	private String responseFilePath = null;
+
+	/**
+	 * proxy use or not for reusing response inputstream
+	 */
+	private boolean isProxyResponseData = false;
+
+	/**
+	 * HttpClient instance
+	 */
+	private HttpClient httpClient = null;
+
+	/**
+	 * HttpParams instance
+	 */
+	private HttpParams httpParameters = null;
+
+	/**
+	 * SSLSocketFactory
+	 */
+	private SSLSocketFactory sslSocketFactory = null;
+
+	/**
 	 * constructor
 	 */
 	public DefaultHttpProcessor()
 	{
-		this(-1, -1);
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param connectionTimeout
-	 *            connection timeout
-	 * @param socketTimeout
-	 *            socket timeout
-	 */
-	public DefaultHttpProcessor(int connectionTimeout, int socketTimeout)
-	{
-		this(connectionTimeout, socketTimeout, -1);
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param connectionTimeout
-	 *            connection timeout
-	 * @param socketTimeout
-	 *            socket timeout
-	 * @param networkBufferSize
-	 *            network
-	 */
-	public DefaultHttpProcessor(int connectionTimeout, int socketTimeout,
-								int networkBufferSize)
-	{
-		this(connectionTimeout, socketTimeout, networkBufferSize, null);
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param sslSocketFactory
-	 *            SSLSocketFactory
-	 */
-	public DefaultHttpProcessor(SSLSocketFactory sslSocketFactory)
-	{
-		this(-1, -1, -1, sslSocketFactory);
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param connectionTimeout
-	 *            connection timeout
-	 * @param socketTimeout
-	 *            socket timeout \* @param trustManager TrustManager
-	 * @param sslSocketFactory
-	 *            SSLSocketFactory
-	 */
-	public DefaultHttpProcessor(int connectionTimeout, int socketTimeout,
-								SSLSocketFactory sslSocketFactory)
-	{
-		this(connectionTimeout, socketTimeout, -1, sslSocketFactory);
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param connectionTimeout
-	 *            connection timeout
-	 * @param socketTimeout
-	 *            socket timeout
-	 * @param networkBufferSize
-	 *            network
-	 * @param sslSocketFactory
-	 *            SSLSocketFactory
-	 */
-	public DefaultHttpProcessor(int connectionTimeout, int socketTimeout,
-								int networkBufferSize, SSLSocketFactory sslSocketFactory)
-	{
-		if (connectionTimeout > 0)
-		{
-			this.connectionTimeout = connectionTimeout;
-		}
-		if (socketTimeout > 0)
-		{
-			this.socketTimeout = socketTimeout;
-		}
-		if (networkBufferSize > 0)
-		{
-			this.networkBufferSize = networkBufferSize;
-		}
-		if (sslSocketFactory == null)
-		{
-			this.sslSocketFactory = getDefaultSSLSocketFactory();
-		}
-		else
-		{
-			this.sslSocketFactory = sslSocketFactory;
-		}
-	}
-
-	/**
-	 * constructor
-	 *
-	 * @param isHttpTrust
-	 *            HTTPS trust
-	 */
-	public DefaultHttpProcessor(boolean isHttpTrust)
-	{
-		this(-1, -1, -1, isHttpTrust == true ? getDefaultSSLSocketFactory()
-				: allowAllSSLSocketFactory);
 	}
 
 	/**
@@ -302,9 +191,19 @@ public class DefaultHttpProcessor
 	 *
 	 * @return HttpClient
 	 */
-	public HttpClient createHttpClient()
+	public HttpClient createHttpClient(IHttpRequestMessage requestMessage)
 	{
-		HttpClient httpClient = createHttpClient(null);
+		HttpClient httpClient = createHttpClient(
+				requestMessage.getConnectionTimeout() > 0
+						? requestMessage.getConnectionTimeout()
+						: DEFAULT_CONNECTION_TIMEOUT,
+				requestMessage.getSocketTimeout() > 0
+						? requestMessage.getSocketTimeout()
+						: DEFAULT_SOCKET_TIME,
+				requestMessage.getNetworkBufferSize() > 0
+						? requestMessage.getNetworkBufferSize()
+						: DEFAULT_NETWORK_BUFFER_SIZE,
+				requestMessage.isTrustSsl());
 		return httpClient;
 	}
 
@@ -313,7 +212,22 @@ public class DefaultHttpProcessor
 	 *
 	 * @return HttpClient
 	 */
-	public HttpClient createHttpClient(SSLSocketFactory sslSocketFactory)
+	public HttpClient createHttpClient(int connectionTimeout, int socketTimeout,
+			int networkBufferSize, boolean isTrustSsl)
+	{
+
+		return createHttpClient(connectionTimeout, socketTimeout,
+				networkBufferSize, isTrustSsl ? getDefaultSSLSocketFactory()
+						: allowAllSSLSocketFactory);
+	}
+
+	/**
+	 * HttpClient instance를 생성한다.
+	 *
+	 * @return HttpClient
+	 */
+	public HttpClient createHttpClient(int connectionTimeout, int socketTimeout,
+			int networkBufferSize, SSLSocketFactory sslSocketFactory)
 	{
 		HttpParams httpParameters = new BasicHttpParams();
 		HttpConnectionParams.setStaleCheckingEnabled(httpParameters, false);
@@ -464,8 +378,7 @@ public class DefaultHttpProcessor
 				HttpEntity entity = null;
 				if (message.getBodyInputStream() != null)
 				{
-					if (message
-							.getBodyType() == HttpMessage.BODY_TYPE_STRING)
+					if (message.getBodyType() == HttpMessage.BODY_TYPE_STRING)
 					{
 						entity = new StringEntity(
 								new String(message.getBodyByteArray()),
@@ -559,8 +472,7 @@ public class DefaultHttpProcessor
 		// create httpclient
 		if (httpClient == null)
 		{
-			// httpClient = createHttpClient();
-			httpClient = createHttpClient(sslSocketFactory);
+			httpClient = createHttpClient(requestMessage);
 		}
 
 		try
@@ -656,15 +568,16 @@ public class DefaultHttpProcessor
 	 * @return DefaultHttpResponseMessage
 	 */
 	private IHttpResponseMessage createHttpResponseMessage(
-			IHttpRequestMessage requestMessage, int status,
-			Header[] headers, InputStream bodyInputStream)
+			IHttpRequestMessage requestMessage, int status, Header[] headers,
+			InputStream bodyInputStream)
 	{
 		IHttpResponseMessage responseMessage = new DefaultHttpResponseMessage();
 		responseMessage.setStatusCode(status);
 		try
 		{
 			responseMessage.setUrl(requestMessage.getUrl());
-		} catch (MalformedURLException e)
+		}
+		catch (MalformedURLException e)
 		{
 			e.printStackTrace();
 		}
@@ -677,9 +590,8 @@ public class DefaultHttpProcessor
 				if (header.getName().equalsIgnoreCase(
 						ContentDisposition.CONTENT_DISPOSITION_NAME))
 				{
-					responseMessage.setContentDisposition(
-							ContentDisposition
-									.getContentDisposition(header.getValue()));
+					responseMessage.setContentDisposition(ContentDisposition
+							.getContentDisposition(header.getValue()));
 				}
 			}
 		}
@@ -732,69 +644,6 @@ public class DefaultHttpProcessor
 	public void setWritingResponseToFile(boolean writingResponseToFile)
 	{
 		isWritingResponseToFile = writingResponseToFile;
-	}
-
-	/**
-	 * return connection timeout.<BR/>
-	 *
-	 * @return connection timeout(milliseconds)
-	 */
-	public int getConnectionTimeout()
-	{
-		return connectionTimeout;
-	}
-
-	/**
-	 * set connection timeout<BR/>
-	 *
-	 * @param connectionTimeout
-	 *            connection timeout(milliseconds)
-	 */
-	public void setConnectionTimeout(int connectionTimeout)
-	{
-		this.connectionTimeout = connectionTimeout;
-	}
-
-	/**
-	 * return socket timeout.<BR/>
-	 *
-	 * @return socket timeout(milliseconds)
-	 */
-	public int getSocketTimeout()
-	{
-		return socketTimeout;
-	}
-
-	/**
-	 * set socket timeout.<BR/>
-	 *
-	 * @param socketTimeout
-	 *            socket timeout(milliseconds)
-	 */
-	public void setSocketTimeout(int socketTimeout)
-	{
-		this.socketTimeout = socketTimeout;
-	}
-
-	/**
-	 * return network buffer size.<BR/>
-	 *
-	 * @return network buffer size(bytes)
-	 */
-	public int getNetworkBufferSize()
-	{
-		return networkBufferSize;
-	}
-
-	/**
-	 * set network buffer size.<BR/>
-	 *
-	 * @param networkBufferSize
-	 *            network buffer size(bytes)
-	 */
-	public void setNetworkBufferSize(int networkBufferSize)
-	{
-		this.networkBufferSize = networkBufferSize;
 	}
 
 	/**
@@ -853,14 +702,14 @@ public class DefaultHttpProcessor
 		DefaultHttpRequestMessage req = new DefaultHttpRequestMessage();
 		try
 		{
-			req.setUrl("http://www.withwiz.com");
+			req.setUrl("https://www.rgate.net:15001/webman/index.cgi");
+			req.setTrustSSl(false);
+			// req.setUrl("http://www.withwiz.com");
 		}
 		catch (MalformedURLException e)
 		{
 			e.printStackTrace();
 		}
-		String url = req.getUrlString();
-		log.info("service url: {}", url);
 		http.setProxyResponseData(false);
 		IHttpResponseMessage res = http.request(req);
 
