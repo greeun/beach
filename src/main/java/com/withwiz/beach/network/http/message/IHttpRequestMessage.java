@@ -33,11 +33,22 @@ public interface IHttpRequestMessage extends IHttpMessage
 	int getBodyType();
 
 	/**
+	 * set connection timeout.<BR/>
+	 * @param connectionTimeout
+     */
+	void setConnectionTimeout(int connectionTimeout);
+
+	/**
 	 * return connection timeout.<BR/>
 	 *
 	 * @return connection timeout(milliseconds)
 	 */
 	int getConnectionTimeout();
+
+	/**
+	 * set socket timeout.<BR/>
+	 */
+	void setSocketTimeout();
 
 	/**
 	 * return socket timeout.<BR/>
@@ -46,6 +57,10 @@ public interface IHttpRequestMessage extends IHttpMessage
 	 */
 	int getSocketTimeout();
 
+	/**
+	 * set network buffer size.<BR/>
+	 */
+	void setNetworkBufferSize();
 
 	/**
 	 * return network buffer size.<BR/>
