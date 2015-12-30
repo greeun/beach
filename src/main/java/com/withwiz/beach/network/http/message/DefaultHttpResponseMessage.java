@@ -33,6 +33,6 @@ public class DefaultHttpResponseMessage extends DefaultHttpMessage implements IH
 	@Override
 	public String toString()
 	{
-		return new StringBuffer(super.toString()).toString();
+		return super.toString();
 	}
 }
