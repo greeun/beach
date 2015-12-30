@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.net.ssl.SSLException;
 
+import com.withwiz.plankton.io.StringInputStream;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -30,6 +31,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -384,11 +386,15 @@ public class DefaultHttpProcessor
 								new String(message.getBodyByteArray()),
 								message.getTextEncoding());
 					}
-					else if (message
-							.getBodyType() == HttpMessage.BODY_TYPE_BYTE_ARRAY)
+//					else if (message
+//							.getBodyType() == HttpMessage.BODY_TYPE_BYTE_ARRAY)
+//					{
+//						entity = new ByteArrayEntity(
+//								message.getBodyByteArray());
+//					}
+					else
 					{
-						entity = new ByteArrayEntity(
-								message.getBodyByteArray());
+						entity = new InputStreamEntity(message.getBodyInputStream());
 					}
 				}
 				else if (message.getParameterSize() > 0)
@@ -680,12 +686,12 @@ public class DefaultHttpProcessor
 	/**
 	 * set use or not proxy for saving HTTP response.<BR/>
 	 *
-	 * @param proxyResponseData
+	 * @param isProxyResponseData
 	 *            use or not
 	 */
-	public void setProxyResponseData(boolean proxyResponseData)
+	public void setProxyResponseData(boolean isProxyResponseData)
 	{
-		isProxyResponseData = proxyResponseData;
+		this.isProxyResponseData = isProxyResponseData;
 	}
 
 	/**
@@ -703,6 +709,11 @@ public class DefaultHttpProcessor
 		try
 		{
 			req.setUrl("https://www.rgate.net:15001/webman/index.cgi");
+			req.setMethod(DefaultHttpRequestMessage.METHOD_POST);
+			// body data
+			StringInputStream inputStream = new StringInputStream(
+					new String("AAA"));
+			req.setBodyInputStream(inputStream);
 			req.setTrustSSl(false);
 			// req.setUrl("http://www.withwiz.com");
 		}
