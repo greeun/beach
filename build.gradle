@@ -1,5 +1,7 @@
 group 'com.withwiz'
-version '0.1.1'
+
+version="0.1.5"
+version "${version}"
 
 apply plugin: 'java'
 apply plugin: 'com.novoda.bintray-release'
@@ -35,7 +37,7 @@ publish {
     userOrg = 'greeun'
     groupId = 'com.withwiz'
     artifactId = 'beach'
-    publishVersion = "0.1.1"
+    publishVersion = property('version')
     desc = 'Beach is HTTP protocol support utility.'
     website = 'https://github.com/greeun/beach'
     issueTracker = '${website}/issues'
